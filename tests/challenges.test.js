@@ -26,13 +26,13 @@ describe('challenges', () => {
 
   describe('map', () => {
     it('should return an array', () => {
-      const array = [];
-      const result = challengeMethods.map((arr, n) => n * n);
+      const arr = [];
+      const result = challengeMethods.map(arr, (n => n * n));
       expect(Array.isArray(result)).toBe(true);
     });
     it('should pass each item into the transform function', () => {
-      const array = [1, 2, 3];
-      const mappedArr = challengeMethods.map((arr, n) => n * 2);
+      const arr = [1, 2, 3];
+      const mappedArr = challengeMethods.map(arr, (n => n * 2));
       expect(mappedArr).toEqual([2, 4, 6]);
     });
     it('should call the callback passed to it for each element in array given', () => {
