@@ -4,7 +4,7 @@ describe('challenges', () => {
   describe('each', () => {
     it('should invoke cb on each array element', () => {
       let count = 0;
-      challengeMethods.each([1, 2, 3], element) => {
+      challengeMethods.each([1, 2, 3], (element) => {
         count += element;
       });
       expect(count).toBe(6);
@@ -26,13 +26,13 @@ describe('challenges', () => {
 
   describe('map', () => {
     it('should return an array', () => {
-      const arr = [];
-      const result = challengeMethods.map(arr, n => n * n);
+      const array = [];
+      const result = challengeMethods.map((arr, n) => n * n);
       expect(Array.isArray(result)).toBe(true);
     });
     it('should pass each item into the transform function', () => {
-      const arr = [1, 2, 3];
-      const mappedArr = challengeMethods.map(arr, n => n * 2);
+      const array = [1, 2, 3];
+      const mappedArr = challengeMethods.map((arr, n) => n * 2);
       expect(mappedArr).toEqual([2, 4, 6]);
     });
     it('should call the callback passed to it for each element in array given', () => {
@@ -68,7 +68,9 @@ describe('challenges', () => {
       expect(typeof challengeMethods.cacheFunction()).toBe('function');
     });
     it('The cached function should return the correct result', () => {
-      const foo = x => x * x;
+      const foo = (x) => {
+        return x * x;
+      };
       const cachedFunction = challengeMethods.cacheFunction(foo);
       expect(cachedFunction(5)).toBe(25);
     });
