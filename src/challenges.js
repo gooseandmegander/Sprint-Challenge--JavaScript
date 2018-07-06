@@ -6,7 +6,7 @@ const each = (elements, cb) => {
   // loop through given array
   for (let i = 0; i < elements.length; i++) {
     // pass each element item to the cb function
-    cb(elements[i]);
+    cb(elements[i], i);
   }
 };
 
@@ -20,6 +20,7 @@ const map = (elements, cb) => {
   for (let i = 0; i < elements.length; i++) {
     // push each element item into new array
     // pass to the cb
+    // mappedArr.push(cb(elements[i]));
     mappedArr.push(cb(elements[i]));
   }
   // return new array of mapped values
@@ -32,14 +33,15 @@ const limitFunctionCallCount = (cb, n) => {
   // The returned function should only allow `cb` to be invoked `n` times.
 
   // initialize a counter variable
-  let counter = 0;
+  let counter = 1;
 
-  const callCB = () => {
+  const callCB = (...args) => {
     // once counter reaches n, do not invoke cb
     if (counter < n) {
-      cb();
       counter++;
+      return cb(...args);
     }
+    return null;
   };
   return callCB;
 };
@@ -92,34 +94,38 @@ const checkMatchingLeaves = (obj) => {
   // otherwise return false
 
   // variable to check each leaf's value against
-  let leaf;
-  let flag = true;
-  const leaves = Object.keys(obj);
+  let matchingLeaf;
+  const leaves = Object.values(obj);
+  // variable counter to store number of different leaves, if any
+  let badLeaves = 0;
 
   // this function sets leaf variable if not set, recurses through nested keys,
-  // and returns false if any leaves do not match leaf variable
-  const checkLeaves = (leavesObj) => {
-    for (let i = 0; i < leaves.length; i++) {
-      const currLeaf = leaves[i];
+  // and increments badLeaves if a different value from matchingLeaf is found
+  const checkLeaves = (leavesArr) => {
+    for (let i = 0; i < leavesArr.length; i++) {
+      const currLeaf = leavesArr[i];
       // if leaf is not set and is a valid type (!object)
-      if (leaf === undefined && typeof currLeaf !== 'object') {
+      if (matchingLeaf === undefined && typeof currLeaf !== 'object') {
         // set leaf to first valid key value
-        leaf = leavesObj[currLeaf];
+        matchingLeaf = currLeaf;
       }
 
       // if current leaf l is an object, call checkLeaves with l
       // if any nested leaf objects within l do not match leaf, flag is set to false
-      if (typeof leavesObj[currLeaf] === 'object')
-        return checkLeaves(leavesObj[currLeaf]);
-      if (leavesObj[currLeaf] !== leaf) {
-        flag = false;
+      if (typeof currLeaf === 'object') {
+        checkLeaves(Object.values(currLeaf));
+      }
+      if (currLeaf !== matchingLeaf && typeof currLeaf !== 'object') {
+        badLeaves++;
       }
     }
   };
 
-  checkLeaves(obj);
-  // if flag is still true, then all leaves must have the same property
-  return flag;
+  checkLeaves(leaves);
+
+  // if badLeaves is still zero, then all leaves are the same
+  if (badLeaves !== 0) return false;
+  return true;
 };
 
 const flatten = (elements) => {
@@ -134,9 +140,8 @@ const flatten = (elements) => {
       // if current is not nested, push to flatArr
       if (current.length === undefined) {
         flatArr.push(current);
-      }
-      // if current is nested, call flatten
-      else {
+      } else {
+        // if current is nested, call flatten
         makeFlat(current);
       }
     }
